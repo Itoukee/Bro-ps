@@ -22,6 +22,10 @@ Commands (Node 24):
 - `npm start`: start Metro for an installed dev build.
 - `npx eas-cli@latest build --platform android --profile development`: dev client APK, run against Metro.
 - `npx eas-cli@latest build --platform android --profile preview`: release-variant APK with the JS embedded, for testing without Metro.
+- `npx supabase@3.0.0 db start`: local database with the migrations applied. Needs Docker.
+- `npx supabase@3.0.0 db reset`: rebuild the local database from the migrations.
+- `npx supabase@3.0.0 test db`: run the pgTAP tests in `supabase/tests`.
+- `npx supabase@3.0.0 stop`: stop the local stack.
 
 Builds run on Expo EAS Build, which needs the owner's Expo login. No local Android SDK is used. Signing credentials stay on EAS, never in the repository.
 
@@ -34,6 +38,8 @@ Builds run on Expo EAS Build, which needs the owner's Expo login. No local Andro
 - At most one speed alert per rider, per ride, for both the rider voice alert and the friend notification.
 - Friend speed alerts are opt-in per user, off by default.
 - No log of who went over the limit. The "alert sent" marker is cleared when the ride ends.
+- Friends see a track only while the ride is in progress. Afterwards it is private to the rider.
+- Raw tracks are deleted after 30 days.
 - The design never rewards or celebrates speed.
 - Riding controls are usable with gloves: touch targets of at least 64 px. Other screens: at least 44 px.
 - Dot characters stay original. Never imitate the characters of another navigation app.
@@ -131,7 +137,29 @@ src/ui/
 - Atomic commits: one logical change each, tests green at every commit.
 - Conventional Commits: `feat:`, `fix:`, `test:`, `refactor:`, `chore:`, `docs:`.
 - Pull requests reference their issue with `Closes #<n>`.
-- Claude commits, pushes or opens pull requests only when asked.
+- Developers commit, push and open pull requests against `develop` on their own branches. They never merge.
+- The CTO reviews every pull request before merging into `develop`, and owns every release to `main`.
+
+## Team
+
+Roles are defined in `.claude/agents/`: `cto`, `product-manager`, `senior-mobile-dev`, `senior-backend-dev`. The owner is the CTO's only stakeholder and decides on money, accounts and product scope.
+
+### Developer workflow
+
+1. Read the issue with `gh issue view <n> --repo Itoukee/Bro-ps`, and keep to its scope.
+2. Create `feature/<issue>-<slug>` from `develop`, in your own worktree.
+3. Work in baby steps with TDD, committing atomically.
+4. Run lint, typecheck and tests on the final code, and read the real result.
+5. Open a pull request against `develop`. Use `Closes #<n>` only when the done criteria are met, and `Refs #<n>` otherwise, saying what remains.
+6. Report to the CTO: branch, pull request, commands run with their actual results, what could not be verified, and the decisions needed.
+
+Limits:
+
+- No system-wide installs, new accounts, paid services or commands needing the owner's login.
+- Never claim anything worked on a phone unless it was observed on one.
+- In a worktree, the guard refuses `rtk git`: use `/usr/bin/git`.
+- Run the project's own binaries, such as `./node_modules/.bin/tsc`, because `rtk tsc` can pick up a global TypeScript and report false errors.
+- The scratchpad is shared between agents: use file names that include your issue number.
 
 ## Security: OWASP
 
