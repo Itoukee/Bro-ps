@@ -19,6 +19,12 @@ describe('Text', () => {
     expect(screen.queryByRole('header')).toBeNull();
   });
 
+  it('announces a message to screen readers as soon as it appears', async () => {
+    await render(<Text announce>That code did not work.</Text>);
+
+    expect(screen.getByRole('alert')).toHaveTextContent('That code did not work.');
+  });
+
   it('exposes a heading to screen readers as a header in the heading font', async () => {
     await render(<Text variant="heading">Groups</Text>);
 

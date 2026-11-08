@@ -19,6 +19,7 @@ expo-env.d.ts
 *.key
 .env
 .env.*
+!.env.example
 
 # TypeScript
 *.tsbuildinfo

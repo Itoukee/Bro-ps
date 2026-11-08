@@ -31,6 +31,7 @@ Builds run on Expo EAS Build, which needs the owner's Expo login. No local Andro
 
 ## Product rules that must not regress
 
+- The app is invitation only: public signups stay closed, and no response reveals whether an email has an account.
 - Location is collected and shared only during a ride. Never outside one.
 - A ride ends by itself after 20 minutes parked.
 - No turn-by-turn navigation.
