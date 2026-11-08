@@ -1,6 +1,9 @@
 import { createIdentityUseCases } from './identityUseCases';
+import { DEFAULT_DOT_APPEARANCE, type DotAppearance } from '../domain/DotAppearance';
 import { parseEmail } from '../domain/Email';
 import { FakeAuthGateway, FakeProfileRepository, RIDER_ID } from '../testing/fakes';
+
+const chosenDot: DotAppearance = { bodyColor: '#FF8FC7', helmetColor: '#2F9BFF', extra: 'ears' };
 
 const setup = () => {
   const auth = new FakeAuthGateway();
@@ -87,7 +90,7 @@ describe('resolving what a rider may access', () => {
 
     expect(await identity.resolveRiderAccess()).toEqual({
       status: 'ready',
-      profile: { riderId: RIDER_ID, displayName: 'Ana' },
+      profile: { riderId: RIDER_ID, displayName: 'Ana', dotAppearance: DEFAULT_DOT_APPEARANCE },
     });
   });
 
@@ -105,17 +108,21 @@ describe('creating a profile', () => {
   it('refuses an invalid name without contacting the server', async () => {
     const { profiles, identity } = setup();
 
-    expect(await identity.createProfile(RIDER_ID, '   ')).toEqual({ status: 'invalid-name' });
+    expect(await identity.createProfile(RIDER_ID, '   ', chosenDot)).toEqual({
+      status: 'invalid-name',
+    });
     expect(await profiles.findByRider(RIDER_ID)).toEqual({ status: 'missing' });
   });
 
-  it('stores the cleaned up name', async () => {
+  it('stores the cleaned up name and the chosen Dot', async () => {
     const { profiles, identity } = setup();
 
-    expect(await identity.createProfile(RIDER_ID, ' Ana ')).toEqual({ status: 'created' });
+    expect(await identity.createProfile(RIDER_ID, ' Ana ', chosenDot)).toEqual({
+      status: 'created',
+    });
     expect(await profiles.findByRider(RIDER_ID)).toEqual({
       status: 'found',
-      profile: { riderId: RIDER_ID, displayName: 'Ana' },
+      profile: { riderId: RIDER_ID, displayName: 'Ana', dotAppearance: chosenDot },
     });
   });
 
@@ -123,7 +130,32 @@ describe('creating a profile', () => {
     const { profiles, identity } = setup();
     profiles.unavailable = true;
 
-    expect(await identity.createProfile(RIDER_ID, 'Ana')).toEqual({ status: 'unavailable' });
+    expect(await identity.createProfile(RIDER_ID, 'Ana', chosenDot)).toEqual({
+      status: 'unavailable',
+    });
+  });
+});
+
+describe('changing the Dot of a rider', () => {
+  it('saves the new Dot and keeps the name', async () => {
+    const { profiles, identity } = setup();
+    profiles.add(RIDER_ID, 'Ana');
+
+    expect(await identity.changeDotAppearance(RIDER_ID, chosenDot)).toEqual({ status: 'saved' });
+    expect(await profiles.findByRider(RIDER_ID)).toEqual({
+      status: 'found',
+      profile: { riderId: RIDER_ID, displayName: 'Ana', dotAppearance: chosenDot },
+    });
+  });
+
+  it('reports a server it cannot reach', async () => {
+    const { profiles, identity } = setup();
+    profiles.add(RIDER_ID, 'Ana');
+    profiles.unavailable = true;
+
+    expect(await identity.changeDotAppearance(RIDER_ID, chosenDot)).toEqual({
+      status: 'unavailable',
+    });
   });
 });
 

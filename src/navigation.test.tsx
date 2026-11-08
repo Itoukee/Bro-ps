@@ -98,6 +98,21 @@ describe('tab navigation', () => {
   });
 });
 
+describe('changing my Dot', () => {
+  beforeEach(() => givenFonts(true));
+
+  it('opens the Dot picker from the Garage tab, without adding a tab', async () => {
+    await openAppSignedIn();
+    await fireEvent.press(tab('Garage'));
+
+    await fireEvent.press(screen.getByRole('button', { name: 'Change my Dot' }));
+
+    expect(await screen.findByRole('header', { name: 'Your Dot' })).toBeOnTheScreen();
+    expect(screen).toHavePathname('/garage/profile');
+    expect(screen.getAllByRole('tab')).toHaveLength(3);
+  });
+});
+
 describe('font loading', () => {
   it('holds the app back until the fonts are ready', async () => {
     givenFonts(false);

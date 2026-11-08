@@ -1,11 +1,12 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
+import { DEFAULT_DOT_APPEARANCE } from '@/contexts/identity/domain/DotAppearance';
 import { RiderSheet } from '@/ui/organisms/RiderSheet';
 import { touchTarget } from '@/ui/theme';
 
 const riders = [
-  { id: 'r1', name: 'Ana' },
-  { id: 'r2', name: 'Marco' },
+  { id: 'r1', name: 'Ana', appearance: DEFAULT_DOT_APPEARANCE },
+  { id: 'r2', name: 'Marco', appearance: DEFAULT_DOT_APPEARANCE },
 ];
 
 describe('RiderSheet', () => {

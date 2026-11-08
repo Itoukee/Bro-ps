@@ -1,5 +1,6 @@
 import type { AuthGateway, CodeVerificationOutcome } from '../domain/AuthGateway';
 import { parseDisplayName } from '../domain/DisplayName';
+import type { DotAppearance } from '../domain/DotAppearance';
 import type { Email } from '../domain/Email';
 import { parseEmail } from '../domain/Email';
 import { parseLoginCode } from '../domain/LoginCode';
@@ -19,6 +20,8 @@ export type RiderAccess =
   | { status: 'ready'; profile: Profile };
 
 export type ProfileCreationResult = { status: 'created' | 'invalid-name' | 'unavailable' };
+
+export type DotAppearanceChangeResult = { status: 'saved' | 'unavailable' };
 
 export type IdentityUseCases = ReturnType<typeof createIdentityUseCases>;
 
@@ -63,12 +66,23 @@ export function createIdentityUseCases({
       }
     },
 
-    async createProfile(riderId: RiderId, rawName: string): Promise<ProfileCreationResult> {
+    async createProfile(
+      riderId: RiderId,
+      rawName: string,
+      appearance: DotAppearance,
+    ): Promise<ProfileCreationResult> {
       const displayName = parseDisplayName(rawName);
       if (displayName === null) {
         return { status: 'invalid-name' };
       }
-      return { status: await profiles.create(riderId, displayName) };
+      return { status: await profiles.create(riderId, displayName, appearance) };
+    },
+
+    async changeDotAppearance(
+      riderId: RiderId,
+      appearance: DotAppearance,
+    ): Promise<DotAppearanceChangeResult> {
+      return { status: await profiles.updateDotAppearance(riderId, appearance) };
     },
 
     onSignedOut(listener: () => void) {

@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { createIdentityUseCases } from '@/contexts/identity/application/identityUseCases';
+import { DEFAULT_DOT_APPEARANCE } from '@/contexts/identity/domain/DotAppearance';
 import {
   FakeAuthGateway,
   FakeProfileRepository,
@@ -26,6 +27,45 @@ const submitName = async (name: string) => {
   await fireEvent.press(screen.getByRole('button', { name: 'Save my name' }));
 };
 
+describe('picking a Dot', () => {
+  const preview = (name: string) => screen.getByRole('image', { name: `Your Dot: ${name}` });
+
+  it('starts from the default Dot', async () => {
+    await setup();
+
+    expect(preview('Yellow body, Purple helmet, No extra')).toBeOnTheScreen();
+  });
+
+  it('previews each choice right away', async () => {
+    await setup();
+
+    await fireEvent.press(screen.getByRole('radio', { name: 'Pink body' }));
+    await fireEvent.press(screen.getByRole('radio', { name: 'Blue helmet' }));
+    await fireEvent.press(screen.getByRole('radio', { name: 'Mustache' }));
+
+    expect(preview('Pink body, Blue helmet, Mustache')).toBeOnTheScreen();
+  });
+
+  it('saves the picked Dot with the name', async () => {
+    const { profiles, onCreated } = await setup();
+
+    await fireEvent.press(screen.getByRole('radio', { name: 'Orange body' }));
+    await fireEvent.press(screen.getByRole('radio', { name: 'Coral helmet' }));
+    await fireEvent.press(screen.getByRole('radio', { name: 'Horns' }));
+    await submitName('Ana');
+
+    await waitFor(() => expect(onCreated).toHaveBeenCalledTimes(1));
+    expect(await profiles.findByRider(RIDER_ID)).toEqual({
+      status: 'found',
+      profile: {
+        riderId: RIDER_ID,
+        displayName: 'Ana',
+        dotAppearance: { bodyColor: '#FFB23E', helmetColor: '#FF5C72', extra: 'horns' },
+      },
+    });
+  });
+});
+
 describe('creating a profile', () => {
   it('saves the display name and moves on', async () => {
     const { profiles, onCreated } = await setup();
@@ -35,7 +75,7 @@ describe('creating a profile', () => {
     await waitFor(() => expect(onCreated).toHaveBeenCalledTimes(1));
     expect(await profiles.findByRider(RIDER_ID)).toEqual({
       status: 'found',
-      profile: { riderId: RIDER_ID, displayName: 'Ana' },
+      profile: { riderId: RIDER_ID, displayName: 'Ana', dotAppearance: DEFAULT_DOT_APPEARANCE },
     });
   });
 

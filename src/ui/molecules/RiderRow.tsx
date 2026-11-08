@@ -1,22 +1,25 @@
 import { StyleSheet, View } from 'react-native';
 
+import type { DotAppearance } from '@/contexts/identity/domain/DotAppearance';
+import { Dot } from '@/ui/atoms/Dot';
 import { Text } from '@/ui/atoms/Text';
-import { colors, outline, spacing } from '@/ui/theme';
+import { spacing } from '@/ui/theme';
 
 type RiderRowProps = {
   name: string;
+  appearance: DotAppearance;
 };
 
-export function RiderRow({ name }: RiderRowProps) {
+const DOT_SIZE = 40;
+
+export function RiderRow({ name, appearance }: RiderRowProps) {
   return (
     <View style={styles.row}>
-      <View style={styles.marker} />
+      <Dot {...appearance} size={DOT_SIZE} />
       <Text>{name}</Text>
     </View>
   );
 }
-
-const MARKER_SIZE = spacing.lg;
 
 const styles = StyleSheet.create({
   row: {
@@ -24,13 +27,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     paddingVertical: spacing.sm,
-  },
-  marker: {
-    width: MARKER_SIZE,
-    height: MARKER_SIZE,
-    borderRadius: MARKER_SIZE / 2,
-    borderWidth: outline.width,
-    borderColor: colors.ink,
-    backgroundColor: colors.yellow,
   },
 });
