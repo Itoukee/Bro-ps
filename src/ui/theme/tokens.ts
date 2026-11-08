@@ -7,6 +7,8 @@ export const colors = {
   coral: '#FF5C72',
   purple: '#6A45F5',
   white: '#FFFFFF',
+  blush: '#FF7FA8',
+  sweat: '#4FB8FF',
 } as const;
 
 export const fontFamily = {
