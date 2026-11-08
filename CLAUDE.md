@@ -13,7 +13,17 @@ Backlog: GitHub issues on `Itoukee/Bro-ps`, ordered by phase. Pick the lowest op
 
 Android only for now, distributed as a free APK. Issues #21, #22 and #23 (iOS) are deferred. Keep platform specifics inside infrastructure adapters so iOS can be added later without touching the domain.
 
-No build or test commands exist yet. Add them here when #2 lands.
+Commands (Node 24):
+
+- `npm ci`: install the locked dependencies.
+- `npm run lint`: ESLint, with warnings treated as errors.
+- `npm run typecheck`: TypeScript strict.
+- `npm test`: Jest on the Android preset.
+- `npm start`: start Metro for an installed dev build.
+- `npx eas-cli@latest build --platform android --profile development`: dev client APK, run against Metro.
+- `npx eas-cli@latest build --platform android --profile preview`: release-variant APK with the JS embedded, for testing without Metro.
+
+Builds run on Expo EAS Build, which needs the owner's Expo login. No local Android SDK is used. Signing credentials stay on EAS, never in the repository.
 
 ## Product rules that must not regress
 
