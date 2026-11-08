@@ -18,60 +18,45 @@ The log stays on the phone until you export it with the share sheet. The app has
 
 ## Build and install
 
-You need a **release-variant** APK. A debug build loads its JavaScript from a laptop, so it cannot work on a ride. The release build embeds the JavaScript. It is signed with the debug key from the generated project, which is fine for this test and must never be used for distribution.
+The APK is built by [Expo EAS Build](https://docs.expo.dev/build/setup/), so no Android tooling is needed on your computer. You need Node, npm and a free Expo account.
 
-### Option A: local build (free, no account)
+The `preview` profile in `eas.json` produces an installable APK with the [`:app:assembleRelease`](https://docs.expo.dev/eas/json/) Gradle task. That is required: a release build embeds the JavaScript, while a debug build loads it from a laptop and cannot work on a ride.
 
-Tested here: only as far as generating the project. The Gradle build has not been run, because this environment has no Android SDK.
+**This build has not been run yet.** It needs the owner's Expo login, so nothing confirms that the build succeeds.
 
-1. Install [Android Studio and JDK 17](https://docs.expo.dev/get-started/set-up-your-environment/?platform=android&device=physical&mode=development-build&buildEnv=local). In the SDK Manager, install Android SDK Platform 37 and Build-Tools 37.0.0, which are the versions React Native 0.88 declares. The Expo page mentions platform 36, but the generated project compiles against 37.
-2. Set the environment:
+**Free tier limits.** The [Free plan](https://expo.dev/pricing) lists up to 15 Android builds and low-priority queueing, with waits of 90 minutes or more at peak times. The page does not say whether the 15 builds reset each month, so avoid unnecessary rebuilds.
 
-   ```sh
-   export ANDROID_HOME=$HOME/Library/Android/sdk
-   export PATH=$PATH:$ANDROID_HOME/platform-tools
-   export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
-   ```
+**Build**
 
-3. Build:
+1. From a checkout of the `spike/1-background-gps` branch, install the dependencies and log in:
 
    ```sh
    cd spike
    npm ci
-   npx expo prebuild --platform android --no-install
-   cd android
-   ./gradlew assembleRelease
+   npx eas-cli@latest login
    ```
 
-4. Install. Enable USB debugging on the phone, connect it, then run:
+2. Link the project to your Expo account. This writes a project ID into `app.json`. Do not commit that change.
 
    ```sh
-   adb install -r app/build/outputs/apk/release/app-release.apk
+   npx eas-cli@latest init
    ```
 
-   Without adb, copy the APK to the phone and open it, then allow installs from that source.
+3. Start the build:
 
-### Option B: EAS Build (free tier, needs an Expo account)
+   ```sh
+   npx eas-cli@latest build --platform android --profile preview
+   ```
 
-Add `spike/eas.json`:
+   On the first build, choose to generate a new Android keystore. Expo stores it on its servers and uses it to sign the APK. The native project is generated on Expo's servers, so `android/` is not needed locally.
 
-```json
-{
-  "build": {
-    "preview": { "distribution": "internal", "android": { "buildType": "apk" } }
-  }
-}
-```
+4. Wait for the build to finish. The command prints a link to the build page, and your builds are also listed at [expo.dev](https://expo.dev/). You can close the terminal while it runs.
 
-Then run, from `spike/`:
+**Install on the phone**
 
-```sh
-npx eas-cli@latest login
-npx eas-cli@latest init
-npx eas-cli@latest build -p android --profile preview
-```
-
-The [Free plan](https://expo.dev/pricing) lists up to 15 Android builds, at low priority, with waits that can exceed 90 minutes at peak. `eas init` writes a project ID into `app.json`.
+1. Open the build link in the phone's browser. Anyone with the link can download the build by default, so keep it private.
+2. Download the APK from the build page, then open the downloaded file.
+3. Android will ask you to allow installs from the browser and show a [security warning](https://docs.expo.dev/build/internal-distribution/), because the app has not been through Play Store review. Accept both to install "BroPS Spike".
 
 ## Real-ride test protocol
 
