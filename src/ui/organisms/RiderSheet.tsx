@@ -1,12 +1,13 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 
+import type { DotAppearance } from '@/contexts/identity/domain/DotAppearance';
 import { Button } from '@/ui/atoms/Button';
 import { Text } from '@/ui/atoms/Text';
 import { RiderRow } from '@/ui/molecules/RiderRow';
 import { colors, outline, spacing, touchTarget } from '@/ui/theme';
 
 type RiderSheetProps = {
-  riders: readonly { id: string; name: string }[];
+  riders: readonly { id: string; name: string; appearance: DotAppearance }[];
   onLetsRide: () => void;
 };
 
@@ -19,7 +20,7 @@ export function RiderSheet({ riders, onLetsRide }: RiderSheetProps) {
       ) : (
         <ScrollView style={styles.list}>
           {riders.map((rider) => (
-            <RiderRow key={rider.id} name={rider.name} />
+            <RiderRow key={rider.id} name={rider.name} appearance={rider.appearance} />
           ))}
         </ScrollView>
       )}
