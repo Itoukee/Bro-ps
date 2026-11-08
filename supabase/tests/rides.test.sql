@@ -1,5 +1,5 @@
 begin;
-select plan(50);
+select plan(53);
 
 -- Ana and Ben ride together in group 1. Cara is only in group 2.
 insert into auth.users (id, email) values
@@ -63,6 +63,15 @@ select isnt_empty(
     where schemaname = 'public' and tablename = 'ride_points'
       and indexdef like '%(created_at)'$$,
   'ride_points is indexed for deletion by age');
+
+-- The alert marker is out of reach of clients at the privilege level, not only
+-- through the row policies
+select is(has_column_privilege('authenticated', 'public.rides', 'friend_speed_alert_sent', 'select'), false,
+  'authenticated clients have no select privilege on the alert marker');
+select is(has_column_privilege('authenticated', 'public.rides', 'friend_speed_alert_sent', 'insert'), false,
+  'authenticated clients have no insert privilege on the alert marker');
+select is(has_column_privilege('authenticated', 'public.rides', 'friend_speed_alert_sent', 'update'), false,
+  'authenticated clients have no update privilege on the alert marker');
 
 -- Acting as Ben, member of group 1
 set local role authenticated;
