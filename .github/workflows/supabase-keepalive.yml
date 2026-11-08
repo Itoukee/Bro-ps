@@ -1,0 +1,29 @@
+name: Supabase keepalive
+
+# GitHub runs scheduled workflows from the default branch only.
+on:
+  schedule:
+    - cron: '23 5 * * 1,4'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call the keepalive endpoint
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::notice::SUPABASE_URL and SUPABASE_ANON_KEY are not configured, skipping."
+            exit 0
+          fi
+          curl --fail-with-body --silent --show-error --max-time 30 \
+            --request POST "$SUPABASE_URL/rest/v1/rpc/keepalive" \
+            --header "apikey: $SUPABASE_ANON_KEY" \
+            --header "Content-Type: application/json" \
+            --data '{}'
