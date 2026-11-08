@@ -19,6 +19,12 @@ describe('Button', () => {
     expect(screen.getByRole('button')).toHaveStyle({ minHeight: touchTarget.standard });
   });
 
+  it('is at least 64 px tall when it is a riding control', async () => {
+    await render(<Button label="Let's ride!" onPress={jest.fn()} size="riding" />);
+
+    expect(screen.getByRole('button')).toHaveStyle({ minHeight: touchTarget.riding });
+  });
+
   it('ignores presses and tells screen readers while it is busy', async () => {
     const onPress = jest.fn();
     await render(<Button label="Send my code" onPress={onPress} busy />);
