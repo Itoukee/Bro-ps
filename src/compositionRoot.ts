@@ -6,7 +6,6 @@ import {
   createIdentityUseCases,
   type IdentityUseCases,
 } from '@/contexts/identity/application/identityUseCases';
-import { createChunkedStorage } from '@/contexts/identity/infrastructure/chunkedStorage';
 import { createSupabaseAuthGateway } from '@/contexts/identity/infrastructure/SupabaseAuthGateway';
 import { createSupabaseProfileRepository } from '@/contexts/identity/infrastructure/SupabaseProfileRepository';
 
@@ -27,11 +26,11 @@ function buildIdentityUseCases() {
   const client = createClient(url, anonKey, {
     auth: {
       storageKey: 'brops.auth',
-      storage: createChunkedStorage({
+      storage: {
         getItem: (key) => SecureStore.getItemAsync(key),
         setItem: (key, value) => SecureStore.setItemAsync(key, value),
-        deleteItem: (key) => SecureStore.deleteItemAsync(key),
-      }),
+        removeItem: (key) => SecureStore.deleteItemAsync(key),
+      },
       persistSession: true,
       autoRefreshToken: true,
       // Links are untrusted input: a session never comes from a URL.
