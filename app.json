@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "BroPS",
+    "slug": "bro-ps",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "brops",
+    "platforms": ["android"],
+    "android": {
+      "package": "com.itoukee.brops",
+      "allowBackup": false,
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.VIBRATE"
+      ]
+    },
+    "plugins": ["expo-router", "expo-font"]
+  }
+}
