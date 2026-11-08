@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import { createIdentityUseCases } from '@/contexts/identity/application/identityUseCases';
+import { DEFAULT_DOT_APPEARANCE } from '@/contexts/identity/domain/DotAppearance';
 import {
   FakeAuthGateway,
   FakeProfileRepository,
@@ -35,7 +36,7 @@ describe('creating a profile', () => {
     await waitFor(() => expect(onCreated).toHaveBeenCalledTimes(1));
     expect(await profiles.findByRider(RIDER_ID)).toEqual({
       status: 'found',
-      profile: { riderId: RIDER_ID, displayName: 'Ana' },
+      profile: { riderId: RIDER_ID, displayName: 'Ana', dotAppearance: DEFAULT_DOT_APPEARANCE },
     });
   });
 

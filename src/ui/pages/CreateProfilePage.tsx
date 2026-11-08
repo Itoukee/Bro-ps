@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { identityUseCases } from '@/compositionRoot';
+import { DEFAULT_DOT_APPEARANCE } from '@/contexts/identity/domain/DotAppearance';
 import type { RiderId } from '@/contexts/identity/domain/Profile';
 import { Button } from '@/ui/atoms/Button';
 import { Text } from '@/ui/atoms/Text';
@@ -25,7 +26,7 @@ export function CreateProfilePage({ riderId, onCreated }: CreateProfilePageProps
   const submit = async () => {
     setBusy(true);
     setError(null);
-    const result = await identityUseCases().createProfile(riderId, name);
+    const result = await identityUseCases().createProfile(riderId, name, DEFAULT_DOT_APPEARANCE);
     setBusy(false);
     if (result.status === 'created') {
       onCreated();

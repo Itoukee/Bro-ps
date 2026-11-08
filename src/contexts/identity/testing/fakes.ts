@@ -5,9 +5,10 @@ import type {
   CurrentRider,
 } from '../domain/AuthGateway';
 import type { DisplayName } from '../domain/DisplayName';
+import { DEFAULT_DOT_APPEARANCE, type DotAppearance } from '../domain/DotAppearance';
 import type { Email } from '../domain/Email';
 import type { LoginCode } from '../domain/LoginCode';
-import type { RiderId } from '../domain/Profile';
+import type { Profile, RiderId } from '../domain/Profile';
 import type { ProfileLookup, ProfileRepository } from '../domain/ProfileRepository';
 
 export const RIDER_ID = '00000000-0000-0000-0000-00000000000a' as RiderId;
@@ -56,29 +57,44 @@ export class FakeAuthGateway implements AuthGateway {
 
 export class FakeProfileRepository implements ProfileRepository {
   unavailable = false;
-  private names = new Map<RiderId, DisplayName>();
+  private profiles = new Map<RiderId, Profile>();
 
-  add(riderId: RiderId, displayName: string) {
-    this.names.set(riderId, displayName as DisplayName);
+  add(
+    riderId: RiderId,
+    displayName: string,
+    dotAppearance: DotAppearance = DEFAULT_DOT_APPEARANCE,
+  ) {
+    this.profiles.set(riderId, {
+      riderId,
+      displayName: displayName as DisplayName,
+      dotAppearance,
+    });
   }
 
   async findByRider(riderId: RiderId): Promise<ProfileLookup> {
     if (this.unavailable) {
       return { status: 'unavailable' };
     }
-    const displayName = this.names.get(riderId);
-    return displayName === undefined
-      ? { status: 'missing' }
-      : { status: 'found', profile: { riderId, displayName } };
+    const profile = this.profiles.get(riderId);
+    return profile === undefined ? { status: 'missing' } : { status: 'found', profile };
   }
 
-  async create(riderId: RiderId, displayName: DisplayName) {
+  async create(riderId: RiderId, displayName: DisplayName, dotAppearance: DotAppearance) {
     if (this.unavailable) {
       return 'unavailable' as const;
     }
-    if (!this.names.has(riderId)) {
-      this.names.set(riderId, displayName);
+    if (!this.profiles.has(riderId)) {
+      this.profiles.set(riderId, { riderId, displayName, dotAppearance });
     }
     return 'created' as const;
+  }
+
+  async updateDotAppearance(riderId: RiderId, dotAppearance: DotAppearance) {
+    const profile = this.profiles.get(riderId);
+    if (this.unavailable || profile === undefined) {
+      return 'unavailable' as const;
+    }
+    this.profiles.set(riderId, { ...profile, dotAppearance });
+    return 'saved' as const;
   }
 }
