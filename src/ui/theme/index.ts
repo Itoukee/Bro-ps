@@ -1,2 +1,2 @@
 export { fontAssets } from './fontAssets';
-export { colors, fontFamily } from './tokens';
+export { colors, fontFamily, fontSize, spacing } from './tokens';

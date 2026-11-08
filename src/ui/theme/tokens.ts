@@ -14,3 +14,13 @@ export const fontFamily = {
   digits: 'Fredoka_600SemiBold',
   body: 'Nunito_400Regular',
 } as const;
+
+export const fontSize = {
+  heading: 32,
+  body: 16,
+} as const;
+
+export const spacing = {
+  sm: 8,
+  lg: 24,
+} as const;
