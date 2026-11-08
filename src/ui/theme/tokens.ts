@@ -22,5 +22,15 @@ export const fontSize = {
 
 export const spacing = {
   sm: 8,
+  md: 16,
   lg: 24,
+} as const;
+
+export const outline = {
+  width: 3,
+  radius: 22,
+} as const;
+
+export const touchTarget = {
+  standard: 44,
 } as const;

@@ -5,13 +5,16 @@ import { colors, fontFamily, fontSize } from '@/ui/theme';
 
 type TextProps = {
   variant?: 'heading' | 'body';
+  /** Reads the text out as soon as it appears. For messages that follow an action. */
+  announce?: boolean;
   children: ReactNode;
 };
 
-export function Text({ variant = 'body', children }: TextProps) {
+export function Text({ variant = 'body', announce = false, children }: TextProps) {
   return (
     <NativeText
-      accessibilityRole={variant === 'heading' ? 'header' : undefined}
+      accessibilityRole={variant === 'heading' ? 'header' : announce ? 'alert' : undefined}
+      accessibilityLiveRegion={announce ? 'polite' : undefined}
       style={styles[variant]}>
       {children}
     </NativeText>
