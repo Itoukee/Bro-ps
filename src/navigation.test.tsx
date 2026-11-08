@@ -16,6 +16,8 @@ jest.mock('expo-font', () => ({
 
 jest.mock('@/compositionRoot', () => ({ identityUseCases: jest.fn() }));
 
+jest.mock('@/ui/organisms/FriendlyMap', () => ({ FriendlyMap: () => null }));
+
 let auth: FakeAuthGateway;
 let profiles: FakeProfileRepository;
 
