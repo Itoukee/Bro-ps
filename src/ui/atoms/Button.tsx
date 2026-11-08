@@ -6,10 +6,18 @@ type ButtonProps = {
   label: string;
   onPress: () => void;
   variant?: 'primary' | 'secondary';
+  /** Use "riding" for controls pressed with gloves on. */
+  size?: 'standard' | 'riding';
   busy?: boolean;
 };
 
-export function Button({ label, onPress, variant = 'primary', busy = false }: ButtonProps) {
+export function Button({
+  label,
+  onPress,
+  variant = 'primary',
+  size = 'standard',
+  busy = false,
+}: ButtonProps) {
   return (
     <Pressable
       accessibilityRole="button"
@@ -17,7 +25,7 @@ export function Button({ label, onPress, variant = 'primary', busy = false }: Bu
       accessibilityState={{ disabled: busy, busy }}
       disabled={busy}
       onPress={onPress}
-      style={[styles.button, styles[variant], busy && styles.busy]}>
+      style={[styles.button, styles[variant], size === 'riding' && styles.riding, busy && styles.busy]}>
       <NativeText style={styles.label}>{label}</NativeText>
     </Pressable>
   );
@@ -39,6 +47,9 @@ const styles = StyleSheet.create({
   },
   secondary: {
     backgroundColor: colors.white,
+  },
+  riding: {
+    minHeight: touchTarget.riding,
   },
   busy: {
     opacity: 0.6,

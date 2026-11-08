@@ -17,6 +17,7 @@ export const fontFamily = {
 
 export const fontSize = {
   heading: 32,
+  title: 22,
   body: 16,
 } as const;
 
@@ -33,4 +34,5 @@ export const outline = {
 
 export const touchTarget = {
   standard: 44,
+  riding: 64,
 } as const;

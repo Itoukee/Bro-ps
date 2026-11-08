@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react-native';
 
 import { Text } from '@/ui/atoms/Text';
-import { colors, fontFamily } from '@/ui/theme';
+import { colors, fontFamily, fontSize } from '@/ui/theme';
 
 describe('Text', () => {
   it('renders body copy in the body font and ink color by default', async () => {
@@ -30,6 +30,15 @@ describe('Text', () => {
 
     expect(screen.getByRole('header', { name: 'Groups' })).toHaveStyle({
       fontFamily: fontFamily.heading,
+    });
+  });
+
+  it('exposes a section title to screen readers as a smaller header', async () => {
+    await render(<Text variant="title">Who&apos;s out riding</Text>);
+
+    expect(screen.getByRole('header', { name: "Who's out riding" })).toHaveStyle({
+      fontFamily: fontFamily.heading,
+      fontSize: fontSize.title,
     });
   });
 });
